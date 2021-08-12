@@ -3,7 +3,7 @@
     "vuepress": "^1.8.2"
   },
   "scripts": {
-    "docs:dev": "vuepress dev docs/vuepress",
-    "docs:build": "vuepress build docs/vuepress"
+    "docs:dev": "vuepress dev vuepress",
+    "docs:build": "vuepress build vuepress"
   }
 }
