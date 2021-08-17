@@ -1,8 +1,13 @@
-base: "/mini-webpack/"
+base: '/mini-webpack/'
 dest: docs
 themeConfig:
+  displayAllHeaders: true
   nav:
   - text: 'Home'
     link: '/'
   - text: 'Webpack 분석'
     link: '/webpack-analysis/'
+  sidebar:
+    '/webpack-analysis/':
+    - ''
+    - 'tapable'
