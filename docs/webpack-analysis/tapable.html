@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tapable</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="">
+    
+    <link rel="preload" href="/mini-webpack/assets/css/0.styles.21ad43ae.css" as="style"><link rel="preload" href="/mini-webpack/assets/js/app.23a12ca8.js" as="script"><link rel="preload" href="/mini-webpack/assets/js/2.0b0e2104.js" as="script"><link rel="preload" href="/mini-webpack/assets/js/9.0bccea54.js" as="script"><link rel="prefetch" href="/mini-webpack/assets/js/3.8a7c68e2.js"><link rel="prefetch" href="/mini-webpack/assets/js/4.2a5d96fc.js"><link rel="prefetch" href="/mini-webpack/assets/js/5.fd255a4a.js"><link rel="prefetch" href="/mini-webpack/assets/js/6.66b67ff0.js"><link rel="prefetch" href="/mini-webpack/assets/js/7.5b15bc09.js"><link rel="prefetch" href="/mini-webpack/assets/js/8.fea2d0b4.js">
+    <link rel="stylesheet" href="/mini-webpack/assets/css/0.styles.21ad43ae.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/mini-webpack/" class="home-link router-link-active"></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/mini-webpack/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/mini-webpack/webpack-analysis/" class="nav-link router-link-active">
+  Webpack 분석
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/mini-webpack/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/mini-webpack/webpack-analysis/" class="nav-link router-link-active">
+  Webpack 분석
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/mini-webpack/webpack-analysis/" aria-current="page" class="sidebar-link">Webpack 분석</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/mini-webpack/webpack-analysis/#package-json" class="sidebar-link">package.json</a></li></ul></li><li><a href="/mini-webpack/webpack-analysis/tapable.html" aria-current="page" class="active sidebar-link">Tapable</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/mini-webpack/webpack-analysis/tapable.html#hook-js" class="sidebar-link">Hook.js</a></li></ul></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="tapable"><a href="#tapable" class="header-anchor">#</a> Tapable</h1> <p>웹팩의 내부 기작을 이해하려면 Tapable을 이해해야 한다.</p> <p>node에 util이라는 공식 라이브러리가 있다는 걸 배웠다.
+문자열을 처리하는 기초 함수들도 제공하고,
+로깅 관련 함수들, 비동기처리리를 도와주는 함수들 등 다양한 &quot;utility&quot; 함수들이 있다.</p> <p>tapable에서 사용되는 함수는 <code>deprecate</code>였다.
+다음처럼 사용하며, <code>DeprecationWarning</code>을 내는 함수를 만들어준다고 한다.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> util <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'util'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+exports<span class="token punctuation">.</span>obsoleteFunction <span class="token operator">=</span> util<span class="token punctuation">.</span><span class="token function">deprecate</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Do something here.</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'obsoleteFunction() is deprecated. Use newShinyFunction() instead.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="hook-js"><a href="#hook-js" class="header-anchor">#</a> Hook.js</h2> <h3 id="method-copy-inside-constructor"><a href="#method-copy-inside-constructor" class="header-anchor">#</a> method copy inside constructor...</h3> <p><code>lib/Hook.js</code>를 따라 치던 중, 의도가 이해되지 않는 부분이 있었다.
+바로 생성자에 있던 <code>this.compile = this.compile</code>...</p> <p>이 부분이 없어도, 분명 잘 돌아갈 것이다.
+인스턴스는 본인에게 없는 함수를 호출할 때,
+본인의 프로토타입 체인을 거슬러 올라가 기어코 이 compile 메소드를
+찾아내어 호출할 게 분명하다.</p> <p>하지만, 직접 간단한 클래스를 작성해서 비교해보니
+이렇게 생성자 안에 동명의 메소드를 넣어주니, 다음이 좋았다:</p> <ul><li>생성자만 보더라도, 클래스의 구성이 한 눈에 들어온다.</li> <li>인스턴스에서 해당 메소드를 호출할 때, 프로토타입 체인 참조가 적어져 더 빠르다.</li> <li>인스턴스를 콘솔에서 조사할 때, 가지고 있는 메소드가 자동완성된다.</li></ul> <p>이것만도 벌써 많이 배웠다.</p></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/mini-webpack/webpack-analysis/" class="prev router-link-active">
+        Webpack 분석
+      </a></span> <!----></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/mini-webpack/assets/js/app.23a12ca8.js" defer></script><script src="/mini-webpack/assets/js/2.0b0e2104.js" defer></script><script src="/mini-webpack/assets/js/9.0bccea54.js" defer></script>
+  </body>
+</html>
