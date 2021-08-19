@@ -1,7 +1,4 @@
 'use strict';
 
-module.exports = tapable;
-
-function tapable() {
-    // TODO
-}
+exports.__esModule = true;
+exports.SyncHook = require("./SyncHook");

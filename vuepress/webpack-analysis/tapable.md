@@ -1,4 +1,5 @@
 # Tapable
+> v2.2.0 건사(鍵寫)
 
 웹팩의 내부 기작을 이해하려면 Tapable을 이해해야 한다.
 
@@ -38,7 +39,28 @@ exports.obsoleteFunction = util.deprecate(() => {
 - 인스턴스에서 해당 메소드를 호출할 때, 프로토타입 체인 참조가 적어져 더 빠르다.
 - 인스턴스를 콘솔에서 조사할 때, 가지고 있는 메소드가 자동완성된다.
 
-이것만도 벌써 많이 배웠다.
+
+재밌는건 2013년 1월 21일에 있었던 [Tapable의 첫번째 커밋](https://github.com/webpack/tapable/commit/0324ba6caa7787f9cb8b95120577a3c8aa72b6fc)을 보면,
+Tapable 함수의 prototype 프로퍼티에 수많은 메소드를 정의한 것을 볼 수 있다.
+
+우와...
+
+
+
+### throwing error in abstract method
+
+`compile` 메소드는 반드시 오버라이드해서 사용되어야 하는 메소드이다.
+이 메소드는 오버라이드 해야 한다는 코멘트를 다는 것으로 만족하지 않고,
+호출되면 에러를 내뱉게 해놓았다.
+
+
+
+---
+## Ideas...
+
+- Plugin vs DI..?
+- Plugin은 Interceptor라고 불리기도 한다... (https://devdocs.magento.com/guides/v2.4/extension-dev-guide/plugins.html)
+
 
 
 

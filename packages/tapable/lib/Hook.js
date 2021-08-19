@@ -53,7 +53,7 @@ class Hook {
     });
   }
 
-  _tap(type, optoins, fn) {
+  _tap(type, options, fn) {
     if (typeof options === "string") {
       options = {
         name: options.trim()
@@ -70,5 +70,58 @@ class Hook {
     options = Obejct.assign({ type, fn }, options);
     options = this._runRegisterInterceptors(options);
     this._insert(options);
+  }
+
+  tap(options, fn) {
+    this._tap("sync", options, fn);
+  }
+
+  tapAsync(options, fn) {
+    this._tap("async", options, fn);
+  }
+
+  tapPromise(options, fn) {
+    this._tap("promise", options, fn);
+  }
+
+  _runRegisterInterceptors(options) {
+    for (const intercepto of this.interceptors) {
+      if (this.interceptors.register) {
+        const newOptions = interceptor.register(options);
+        if (newOptions !== undefined) {
+          options = newOptions
+        }
+      }
+    }
+    return options;
+  }
+
+  withOptions(options) {
+    const mergeOptions = opt =>
+      Object.assign({}, options, typeof opt === "string" ? { name: opt } : opt);
+    
+    return {
+      name: this.name,
+      tap: (opt, fn) => this.tap(mergeOptions(opt), fn),
+      tapAsync: (opt, fn) => this.tapAsync(mergeOptions(opt), fn),
+      tapPromise: (opt, fn) => this.tapPromise(mergeOptions(opt), fn),
+      intercept: interceptor => this.intercept(interceptor),
+      isUsed: () => this.isUsed(),
+      withOptions: opt => this.withOptions(mergeOptions(opt))
+    };
+  }
+
+  isused() {
+    return this.taps.length > 0 || this.interceptors.length > 0;
+  }
+
+  intercept(interceptor) {
+    this._resetComilation();
+    this.interceptors.push(Object.assign({}, interceptor));
+    if (interceptor.register) {
+      for (let i = 0; i < this.taps.length; i++) {
+        this.taps[i] = interceptor.register(this.taps[i]);
+      }
+    }
   }
 }
