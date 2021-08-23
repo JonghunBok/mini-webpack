@@ -124,4 +124,51 @@ class Hook {
       }
     }
   }
+
+  _resetComilation() {
+    this.call = this._call;
+    this.callAsync = this._callAsync;
+    this.promise = this._promise;
+  }
+
+  // TODO: 유난히 이해가 안가는 메소드.. 다른 부분들을 필사한 후에 돌아오자.
+  _insert(item) {
+    this._resetCompilation();
+    let before;
+    if (typeof item.before === "string") {
+      before = new Set([item.before]);
+    } else if (Array.isArray(item.before)) {
+      before = new Set(item.before);
+    }
+    let stage = 0;
+    if (typeof item.stage === "number") {
+      stage = item.stage;
+    }
+    let i = this.taps.length;
+    while (i > 0) {
+      i--;
+      const x = this.taps[i];
+      this.taps[i + 1] = x;
+      const xStage = x.stage || 0;
+      if (before) {
+        if (before.has(x.name)) {
+          before.delete(x.name);
+          continue;
+        }
+        if (before.size > 0) {
+          continue;
+        }
+      }
+
+      if (xStage > stage) {
+        continue;
+      }
+      i++;
+      break;
+    }
+    this.taps[i] = item;
+  }
 }
+
+Object.setPrototypeOf(Hook.prototype, null);
+module.exports = Hook;
